@@ -1,6 +1,6 @@
 run: jar
-	hadoop fs -rm -f -r  /user/yerath/wordcount/output
-	hadoop jar wordcount.jar org.myorg.WordCount /user/yerath/wordcount/input /user/yerath/wordcount/output
+	hadoop fs -rm -f -r  /user/${USER}/wordcount/output
+	hadoop jar wordcount.jar org.myorg.WordCount /user/${USER}/wordcount/input /user/${USER}/wordcount/output
 
 run_caseSensitive: jar
 	hadoop fs -rm -f -r  /user/yerath/wordcount/output
