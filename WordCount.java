@@ -41,6 +41,7 @@ public class WordCount extends Configured implements Tool {
     //Set all the mappers etc..
     job.setMapperClass(Map.class);
     job.setReducerClass(Reduce.class);
+    job.setCombinerClass(Reduce.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
 
@@ -59,24 +60,30 @@ public class WordCount extends Configured implements Tool {
       String line = lineText.toString();
       Text currentWord = new Text();
       for (String word : WORD_BOUNDARY.split(line)) {
-        if (word.isEmpty()) {
+        if (word.isEmpty() || !isAlpha(word)) {
             continue;
         }
-            currentWord = new Text(word);
+            currentWord = new Text(word.toLowerCase());
             context.write(currentWord,one);
         }
     }
+
+    public boolean isAlpha(String name) {
+        return name.matches("[a-zA-Z]+");
+    }
   }
+
+  
 
   public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
     @Override
     public void reduce(Text word, Iterable<IntWritable> counts, Context context)
         throws IOException, InterruptedException {
-      int sum = 0;
-      for (IntWritable count : counts) {
-        sum += count.get();
-      }
-      context.write(word, new IntWritable(sum));
+        int sum = 0;
+        for (IntWritable count : counts) {
+            sum += count.get();
+        }
+        context.write(word, new IntWritable(sum));
     }
   }
 }
