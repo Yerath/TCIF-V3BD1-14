@@ -1,18 +1,18 @@
 #!/bin/bash
 echo "Creating Directories" 
-hadoop fs -mkdir /user/yerath
-hadoop fs -chown yerath /user/yerath
-hadoop fs -mkdir /user/yerath/wordcount /user/yerath/wordcount/input 
+hadoop fs -mkdir /user/${USER}
+hadoop fs -chown yerath /user/${USER}
+hadoop fs -mkdir /user/${USER}/wordcount /user/${USER}/wordcount/input 
 
 echo "Creating input files" 
-hadoop fs -rm -f -r /user/yerath/wordcount/input
-hadoop fs -put Alice /user/yerath/wordcount/input
+hadoop fs -rm -f -r /user/${USER}/wordcount/input
+hadoop fs -put Alice /user/${USER}/wordcount/input
 
 echo "Removing old results"
-hadoop fs -rm -r /user/yerath/wordcount/output 
+hadoop fs -rm -r /user/${USER}/wordcount/output 
 
 echo "Running WordCount"
 make
 
 echo "Results"
-hadoop fs -cat /user/yerath/wordcount/output/*
+hadoop fs -cat /user/${USER}/wordcount/output/*

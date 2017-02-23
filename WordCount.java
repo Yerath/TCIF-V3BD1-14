@@ -2,6 +2,10 @@ package org.myorg;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
+import java.io.File;
+import java.util.*;
+import java.io.FileNotFoundException;
+
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -51,6 +55,8 @@ public class WordCount extends Configured implements Tool {
 
   public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
     private final static IntWritable one = new IntWritable(1);
+    private static final File ignoreList = new File("ignore-list");
+
     private Text word = new Text();
     private long numRecords = 0;    
     private static final Pattern WORD_BOUNDARY = Pattern.compile("\\s*\\b\\s*");
@@ -60,7 +66,7 @@ public class WordCount extends Configured implements Tool {
       String line = lineText.toString();
       Text currentWord = new Text();
       for (String word : WORD_BOUNDARY.split(line)) {
-        if (word.isEmpty() || !isAlpha(word)) {
+        if (word.isEmpty() || !isAlpha(word) || checkWord(word)) {
             continue;
         }
             currentWord = new Text(word.toLowerCase());
@@ -70,6 +76,21 @@ public class WordCount extends Configured implements Tool {
 
     public boolean isAlpha(String name) {
         return name.matches("[a-zA-Z]+");
+    }
+    
+    public boolean checkWord(String theWord) {
+        try {
+           Scanner scanner = new Scanner(ignoreList);
+           while (scanner.hasNext()) {
+            if(scanner.next().toLowerCase().contains(theWord.toLowerCase())){
+                return true;
+            }
+           }
+           scanner.close();
+        } catch (FileNotFoundException e) {
+           e.printStackTrace();
+        } 
+        return false;
     }
   }
 
